@@ -1,0 +1,716 @@
+<?php
+ini_set("display_errors","1");
+error_reporting(E_ALL);
+require_once("../elements/dbconnect.php"); 
+$val_state = array();
+	$get_state=$dbcon->query("SELECT state FROM states_list ORDER BY state");
+	if($get_state->num_rows>0){
+		while($row		= $get_state->fetch_array()){
+		$val_state[] = strtoupper($row['state']);
+		}
+	}
+/* if(isset($_GET["pincode"])){ 
+	$get_state=$dbcon->query("SELECT district_name, state_name FROM `pincode_database` where pincode  = '".$_GET['pincode']."'  AND delivery_status = 'Delivery'");
+		if($get_state->num_rows>0){
+			$val_state		= $get_state->fetch_assoc();
+			echo $val_state['district_name'].'@'.ucwords(strtolower($val_state['state_name']));
+		}
+		die;
+} */
+if(isset($_POST['pincode'])){
+$selectpincode=$dbcon->query("SELECT pincode,state_name,district_name FROM `pincode_database` where pincode like '".$_POST['pincode']."%' group by pincode LIMIT 10");
+$data=array();	
+while($resultpincode=$selectpincode->fetch_assoc()){
+$data[]=$resultpincode;
+}	
+echo json_encode($data);
+die();
+}	
+?>
+	<script src="../assets/vendors/custom/handsontable/dist/handsontable.full.js" type="text/javascript"></script>
+	<link href="../assets/vendors/custom/handsontable/dist/handsontable.full.css" rel="stylesheet" type="text/css" />
+    <style>
+		 
+		 .m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step {
+				padding-bottom: 2rem !important;
+			}
+		.m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step .m-wizard__step-info {
+              padding-left: 0rem; 
+          }
+		  
+		.m-wizard.m-wizard--5 .m-wizard__head .m-wizard__nav .m-wizard__steps .m-wizard__step .m-wizard__step-info .m-wizard__step-number {
+			display: contents;
+		}
+		
+		.m-form .m-form__group {
+			margin-bottom: 0;
+			padding-top: 0px; 
+			padding-bottom: 15px;
+		}
+		.m-wizard.m-wizard--5 .m-wizard__head {
+			margin: -5rem 0 1rem 0;
+		}
+		.has-danger .form-control-feedback {
+         color: #f4516c;
+        }
+		.m-form .form-control-feedback { color: #f4516c; }
+		.ui-autocomplete { z-index: 9999 !important;}
+
+        .m-form__group{padding: 10px 5px 2px 5px !important;}
+		.row {
+			margin-right: -15px !important;
+			margin-left: -15px !important;
+		}
+		.required{color:red;}
+		.disabled{pointer-events:none;}
+		.remove_promoter{display:none;}
+		.handsontable table thead th {
+			/*white-space: pre-line;*/
+			font-weight:bold;
+		}
+		</style>	
+    <?php if(isset($_POST['rid']) && $_POST['rid']==1){?>		
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLongTitle">TDS Deductor Details</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+				</button>
+				</div>
+				<div class="modal-body">
+					<div class="m-wizard m-wizard--5 m-wizard--brand" id="m_wizard">
+
+						<!--begin: Message container -->
+								<div class="m-portlet__padding-x">
+										<!-- Here you can put a message or alert -->
+								</div>
+								<!--end: Message container -->
+
+							<!--begin: Form Wizard Head -->
+							<div class="m-wizard__head m-portlet__padding-x">	
+								<div class="row">
+									<div class="col-xl-12">			 
+										<!--begin: Form Wizard Nav -->
+										<div class="m-wizard__nav">
+											<div class="m-wizard__steps">							 
+												<div class="m-wizard__step m-wizard__step--current" m-wizard-target="m_wizard_form_step_1">
+													<div class="m-wizard__step-info">
+
+														<a href="#" class="m-wizard__step-number">							
+															<span class="m-wizard__step-seq">1.</span>
+															<span class="m-wizard__step-label">
+																Company Details
+															</span>
+															<span class="m-wizard__step-icon"><i class="la la-check"></i></span> 
+														</a>									
+													</div>
+												</div>
+												
+												<div class="m-wizard__step" m-wizard-target="m_wizard_form_step_2">
+													<div class="m-wizard__step-info">
+														<a href="#" class="m-wizard__step-number">							
+															<span class="m-wizard__step-seq">2.</span>
+															<span class="m-wizard__step-label">
+																Other Details
+															</span>
+															<span class="m-wizard__step-icon"><i class="la la-check"></i></span> 
+														</a>									
+													</div>
+												</div>
+											</div>	
+										</div>	
+										<!--end: Form Wizard Nav -->						 
+									</div>
+								</div>					
+							</div>
+							<!--end: Form Wizard Head -->
+
+							<!--begin: Form Wizard Form-->
+							<div class="m-wizard__form" style="margin-top: 2.5rem;">
+								<!--
+									1) Use m-form--label-align-left class to alight the form input lables to the right
+									2) Use m-form--state class to highlight input control borders on form validation
+								-->
+								<form class="m-form m-form--label-align-left- m-form--state-" id="m_form">
+									<!--begin: Form Body -->
+									<div class="m-portlet__body">
+
+										<!--begin: Form Wizard Step 1-->
+										<div class="m-wizard__form-step m-wizard__form-step--current" id="m_wizard_form_step_1">
+											<div class="row">
+												<div class="col-xl-12">
+													<div class="m-form__section m-form__section--first">
+															<div class="form-group m-form__group row"> 
+																<div class="col-lg-12">
+																	<label class="control-label">Company Name<span class="required">* </span></label>
+																	<input type="text" name="company_name" value="" class="form-control m-input--air m-input--square m-input uppercasetext" id="company_name" required>
+																</div>
+															</div>
+															<div class="form-group m-form__group row">
+																<div class="col-lg-6">
+																	<label class="control-label">Company TAN Number<span class="required"> * </span></label>
+																	<input type="text" class="form-control m-input m-input--air m-input--square uppercasetext" value="" name="company_tan" id="company_tan" oninput="if (this.value.length > 10)this.value = this.value.slice(0, -1);" onblur="tan_verify(this);" required>	
+																</div>
+																<div class="col-lg-6">
+																	<label class="control-label">Company PAN Number <span class="required">* </span></label>
+																	<input type="text" class="form-control m-input--air m-input--square m-input uppercasetext" name="company_pan" id="company_pan"  value="" oninput="if (this.value.length > 10)this.value = this.value.slice(0, -1);" onblur="pan_verify(this);" required>
+																</div>
+															</div>
+															<div class="form-group m-form__group row">
+																<div class="col-lg-6">
+																	<label class="control-label">Phone No <span class="required">* </span></label>
+																	<input type="text"  class="form-control m-input--air m-input--square m-input" name="company_phone" id="company_phone"  value="" maxlength="10" onkeypress="return isNumberKey(event);">	
+																</div>
+																<div class="col-lg-6">
+																	<label class="control-label">Email ID <span class="required">* </span></label>
+																	<input type="email" class="form-control m-input--air m-input m-input--square" name="company_email" id="company_email" required>
+																</div>
+															</div>
+															<div class="m-form__heading" style="margin: 15px 0 20px 0;">
+																<h5 class="m-form__heading-title">Registered Office Address</h5>
+															</div>
+															<div class="form-group m-form__group row">
+																<div class="col-lg-6">
+																	<label class="control-label">Address Line 1<span class="required"> * </span></label>
+																	<input type="text" name="company_address1" id="company_address1"  value="" class="form-control m-input--air m-input--square m-input uppercasetext" required>
+																	<span class="m-form__help">Street address, P.O. box, company name, c/o</span>
+																</div>
+																<div class="col-lg-6">
+																	<label class="control-label">Address Line 2</label>
+																	<input type="text" class="form-control m-input--air m-input--square m-input uppercasetext" name="company_address2" id="company_address2"  value="">
+																	<span class="m-form__help">Appartment, suite, unit, building, floor, etc</span>
+																</div>
+															</div>
+															<div class="form-group m-form__group row">
+																<div class="col-md-6">
+																	<label class="control-label">City/Village <span class="required" aria-required="true"> * </span></label>
+																	<input type="text" name="company_city" id="company_city"  value="" class="form-control m-input--air m-input--square m-input uppercasetext" required>
+																</div>
+																<div class="col-md-6">
+																	<label class="control-label">Pincode <span class="required" aria-required="true"> * </span></label>
+																	<input type="text" class="form-control m-input--air m-input--square m-input" name="company_pincode" id="company_pincode" value="" maxlength="6" onkeypress="return isNumberKey(event);" onkeyup="autopincode(this);" data-id="company_district$company_state" required>
+																</div>
+															</div>
+															<div class="form-group m-form__group row">
+																<div class="col-md-6">
+																	<label class="control-label">District <span class="required"> * </span> </label>
+																	<input type="text" name="company_district"  value="" class="form-control m-input--air m-input--square m-input uppercasetext"  id="company_district" required>
+																</div>
+																<div class="col-md-6">
+																	<label class="control-label">State <span class="required"> * </span> </label>
+																	<select name="company_state" class="form-control m-input--air m-input--square m-input uppercasetext" id="company_state" required>
+																	<option value="">Select State</option>
+																	<?php	foreach($val_state as $states){ ?>
+																	<option value="<?=$states?>"> <?=$states?></option>
+																	<?php } ?>
+																	</select>
+																</div>
+															</div>
+													</div>
+												</div>	
+											</div>
+										</div>
+										<!--end: Form Wizard Step 1-->
+
+										<!--begin: Form Wizard Step 2-->
+										<div class="m-wizard__form-step" id="m_wizard_form_step_2">
+											<div class="row">
+												<div class="col-xl-12">
+													<div class="m-form__section m-form__section--first">
+														<div class="form-group m-form__group row"> 
+															<div class="col-lg-12">
+																<label class="control-label">Responsible Person Name<span class="required">* </span></label>
+																<input type="text" name="name" value="" class="form-control m-input--air m-input--square m-input uppercasetext" id="name" required>
+															</div>
+														</div>
+														<div class="form-group m-form__group row">
+															<div class="col-lg-6">
+																<label class="control-label">PAN Number <span class="required">* </span></label>
+																<input type="text"  class="form-control m-input--air m-input--square m-input uppercasetext" name="pan" id="pan" value="" oninput="if (this.value.length > 10)this.value = this.value.slice(0, -1);" onblur="pan_verify(this);" required>	
+															</div>
+															<div class="col-lg-6">
+																<label class="control-label">Email ID <span class="required">* </span></label>
+																<input type="email" class="form-control m-input--air m-input m-input--square" name="email" id="email" required>
+															</div>
+														</div>
+														<div class="m-form__heading" style="margin: 15px 0 20px 0;">
+																<h5 class="m-form__heading-title">Residential Address</h5>
+															</div>
+														<div class="form-group m-form__group row">
+															<div class="col-lg-6">
+																<label class="control-label">Address Line 1<span class="required"> * </span></label>
+																<input type="text" class="form-control m-input--air m-input--square m-input uppercasetext"  name="address1" id="address1"  value="" required>
+																<span class="m-form__help">Street address, P.O. box, company name, c/o</span>
+															</div>
+															<div class="col-md-6">
+																	<label class="control-label">Address Line 2</label>
+																	<input type="text" class="form-control m-input--air m-input--square m-input uppercasetext" name="address2" id="address2"  value="">
+																	<span class="m-form__help">Appartment, suite, unit, building, floor, etc</span>
+															</div>
+														</div>
+														<div class="form-group m-form__group row">
+															<div class="col-md-6">
+																<label class="control-label">City/Village <span class="required" aria-required="true"> * </span></label>
+																<input type="text" class="form-control m-input--air m-input--square m-input uppercasetext" name="city" id="city"  value="" required>
+															</div>
+															<div class="col-md-6">
+																<label class="control-label">Pincode <span class="required" aria-required="true"> * </span></label>
+																<input type="text" name="pincode" id="pincode"  value="" class="form-control m-input--air m-input--square m-input" maxlength="6" onkeypress="return isNumberKey(event);" onkeyup="autopincode(this);" data-id="district$state" required>
+															</div>
+														</div>
+														<div class="form-group m-form__group row">
+															<div class="col-md-6">
+																<label class="control-label">District <span class="required"> * </span> </label>
+																<input type="text" name="district"  value="" class="form-control m-input--air m-input--square m-input uppercasetext"  id="district" required>
+															</div>
+															<div class="col-md-6">
+																<label class="control-label">State <span class="required"> * </span> </label>
+																<select name="state" class="form-control m-input--air m-input--square m-input uppercasetext" id="state" required>
+																	<option value="">Select State</option>
+																	<?php	foreach($val_state as $states){ ?>
+																	<option value="<?=$states?>"> <?=$states?></option>
+																	<?php } ?>
+																</select>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!--end: Form Body -->
+
+									<!--begin: Form Actions -->
+									<div class="m-portlet__foot m-portlet__foot--fit m--margin-top-10">
+										<div class="m-form__actions m-form__actions" style="padding: 30px 0px 15px;">
+											<div class="row">
+												
+												<div class="col-lg-6 m--align-left">
+													<a href="#" class="btn btn-primary m-btn m-btn--custom m-btn--icon" data-wizard-action="prev">
+														<span>
+															<i class="la la-arrow-left"></i>&nbsp;&nbsp;
+															<span>Back</span>
+														</span>
+													</a>
+												</div>
+												<div class="col-lg-6 m--align-right">
+													<a href="#" class="btn btn-success m-btn m-btn--custom m-btn--icon" data-wizard-action="submit">
+														<span>
+															<i class="la la-check"></i>&nbsp;&nbsp;
+															<span>Submit</span>
+														</span>
+													</a>
+													<a href="#" class="btn btn-warning m-btn m-btn--custom m-btn--icon" data-wizard-action="next">
+														<span>
+															<span>Save & Continue</span>&nbsp;&nbsp;
+															<i class="la la-arrow-right"></i>
+														</span>
+													</a>
+												</div>
+												
+											</div>
+										</div>
+									</div>
+									<!--end: Form Actions -->
+								</form>
+							</div>
+							<!--end: Form Wizard Form-->
+					</div>
+				</div>
+	
+		<?php } if(isset($_POST['rid']) && $_POST['rid']==2){?>
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLongTitle">TDS Deductee Details</h5>
+			</div>
+			<div class="modal-body"> 
+				<div id="example"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				<button class="btn btn-primary" id="tds_data_save">Save</button>
+			</div>
+		<?php } if(isset($_POST['rid'])&& $_POST['rid']==3) { ?>
+			<div class="modal-header">
+				<h3 class="modal-title" id="exampleModalLabel">
+				Upload Bank Proof
+				</h3> 
+			</div>
+			<form id="bank_proof_upload" enctype="multipart/form-data" method="post">
+					<div class="modal-body">
+						<input type="hidden" name="engagement_id" value="">
+						<input type="hidden" name="doc_id" id="doc_id" value="348">	
+						<input type="hidden" name="doc_tag" value="Bank Challen">	
+						<div class="form-group m-form__group">
+						<label class="control-label">Upload Photo</label>
+						<input class="form-control m-input--air m-input--square m-input" type="file" name="bank_proof" id="bank_proof" required>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-primary" name="submit_bank_proof" id="submit_bank_proof">Upload</button>
+					</div>
+			</form>
+	<?php } ?>
+	
+<script>
+// form wizard steps
+var WizardDemo = function() {
+    $("#m_wizard");
+    var e, r, i = $("#m_form");
+    return {
+        init: function() {
+            var n;
+            $("#m_wizard"), i = $("#m_form"), (r = new mWizard("m_wizard", {
+                startStep: 1
+            })).on("beforeNext", function(r) {
+                !0 !== e.form() && r.stop()
+            }), r.on("change", function(e) {
+                mUtil.scrollTop()
+            }), e = i.validate({
+                ignore: ":hidden"
+            })
+        }
+    }
+}();
+jQuery(document).ready(function() {
+    WizardDemo.init()
+});
+// TDS Deductor details submission
+(n = $('#m_form').find('[data-wizard-action="submit"]')).on("click", function(evt) {
+	evt.preventDefault();
+	if(!$('#m_form').valid()) return false;
+	n.addClass('m-loader m-loader--light m-loader--right disabled');
+	var formdata=$('#m_form').serializeJSON();
+	var jsondata=JSON.stringify(formdata).replace(/'/g,"''");
+    $.ajax({
+	url:'tds-post.php',
+	type:'post',
+	data:{"tds_data":jsondata},
+	dataType:'json',
+	success: function(data) {
+		n.removeClass('m-loader m-loader--light m-loader--right disabled');
+		$('#dynamic_form').modal('hide');
+	}
+	}); 
+})
+// fssai promoter submission
+$('#promoter_form').on('submit',function (evt) {
+	evt.preventDefault();
+	$('#promoter_form').find('button[type="submit"]').addClass('m-loader m-loader--light m-loader--right disabled');
+	var formdata=$('#promoter_form').serializeJSON();
+	var jsondata=JSON.stringify(formdata).replace(/'/g,"''");
+	 $.ajax({
+		url:"fssai-post.php",
+		type:"post",
+		data:{"fssai_data":jsondata},
+		dataType:'json',
+		success:function(data){
+			if(data=='sess'){
+			 toastr.warning("Please Login Again", "Session has been expired");
+			 setTimeout(function(){
+						window.location.href = "<?=$index_path?>";
+					}, 2000);
+			}else if(data==1){					 
+				toastr.success("Data Updated..");
+				$('#promoter_form').find('button[type="submit"]').removeClass('m-loader m-loader--light m-loader--right disabled');
+			}else{ 
+				$('#promoter_form').find('button[type="submit"]').removeClass('m-loader m-loader--light m-loader--right disabled');
+				toastr.error("Something went wrong please try again");
+			}
+		}
+	}); 
+	return false;
+});
+$(document).on('keyup change', '.uppercasetext', function () {	
+    $(this).val($(this).val().toUpperCase());  
+ });
+
+$('.date-picker').datepicker({
+	todayHighlight: true,
+	orientation: "bottom left",
+	format: 'yyyy-mm-dd',
+	templates: {
+		leftArrow: '<i class="la la-angle-left"></i>',
+		rightArrow: '<i class="la la-angle-right"></i>'
+	}
+});
+function getPincode(pincode,district,state){
+	var pincode =  pincode;
+	var len = pincode.length;
+	var data = {'pincode':pincode}
+	if(len == 6){
+		$.ajax({
+			 url:"tds-modals.php",
+			 type:"get",
+			 data:data,
+			 success:function(data){
+				value = data.split('@');
+				$("#"+district).val(value[0]) ;
+				$("#"+state).val(value[1]); 
+				 }
+		});
+	}
+}
+
+function pan_verify(elem){   
+ var regExp = /[a-zA-z]{5}\d{4}[a-zA-Z]{1}/; 
+ var pan = $(elem).val(); 
+  toastr.remove();
+ if (pan.length == 10 ){ 
+  if( pan.match(regExp) ){ 
+		toastr.success('Valid TAN Number');
+  }
+  else {
+		toastr.error('Not a valid PAN number');
+		event.preventDefault(); 
+    elem.focus();
+  } 
+ } 
+ else { 
+  toastr.warning('Please enter 10 digits for a valid PAN number');
+  event.preventDefault();
+  elem.focus();	   
+ } 
+}
+function tan_verify(elem){   
+ var regExp = /[a-zA-z]{4}\d{5}[a-zA-Z]{1}/; 
+ var tan = $(elem).val(); 
+  toastr.remove();
+ if (tan.length == 10 ){ 
+  if( tan.match(regExp) ){ 
+  toastr.success('Valid TAN Number');
+  }
+  else {
+  toastr.error('Not a valid TAN number');
+   event.preventDefault(); 
+   elem.focus();
+  } 
+ } 
+ else { 
+    toastr.warning('Please enter 10 digits for a valid TAN number');
+    elem.focus();	   
+ } 
+}
+function autopincode(element){
+	var id=$(element).data('id');	
+	splitid=id.split('$');
+	console.log(splitid[1]);
+  var s = document.createElement('script');
+	s.type = 'text/javascript'; 
+	s.src = '../assets/js/jquery-ui.js'; 
+	document.getElementsByTagName('head')[0].appendChild(s);
+	var s1 = document.createElement('link');
+	s1.type = 'text/css';
+	s1.rel='stylesheet';
+	s1.href = '../assets/js/jquery-ui.css'; 
+	document.getElementsByTagName('head')[0].appendChild(s1);
+	$(element).autocomplete({
+      source: function (request, response) {
+			$.ajax({
+			url:'tds-modals.php',	 
+			type:'POST',
+			dataType:'json',
+			data: {pincode:$(element).val()},
+			success: function(data){
+				 response($.map(data, function (item) {
+					return {
+						value:item.pincode,
+						district:item.district_name,
+						state:item.state_name
+					};
+				}));
+			}
+		  });
+		},
+		select: function (event, ui) {
+		 $(element).val(ui.item.pincode);
+		 $('#'+splitid[0]).val((ui.item.district).toUpperCase());
+		 $('#'+splitid[1]).val(ui.item.state);	
+		}
+    });  
+}
+function isNumberKey(evt)
+{
+ var charCode = (evt.which) ? evt.which : event.keyCode
+ if (charCode > 31 && (charCode < 48 || charCode > 57))
+	return false;
+
+ return true;
+}
+$(document).on('keyup change', '.uppercasetext', function () {	
+  $(this).val($(this).val().toUpperCase());  
+});
+$('[data-toggle="m-popover"]').popover({
+	trigger: 'hover',
+  template: '<div class="m-popover popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
+	
+});
+</script>
+<script type="text/javascript">
+function rowRenderer(instance, td, row, col, prop, value, cellProperties) {
+	 Handsontable.renderers.NumericRenderer.apply(this, arguments);
+	 td.style.fontWeight = 'bold';
+}
+function cellBackground(instance, td, row, col, prop, value, cellProperties) {
+	 Handsontable.renderers.TextRenderer.apply(this, arguments);
+	 td.style.background = 'yellow';
+	 td.style.color = 'black';
+}
+function heading(instance, td, row, col, prop, value, cellProperties) {
+	 Handsontable.renderers.TextRenderer.apply(this, arguments);
+	 td.style.fontWeight = 'bold';
+	 td.style.fontSize = '12pt';
+}
+ function percentageRenderer(instance, td, row, col, prop, value, cellProperties) {
+   Handsontable.renderers.NumericRenderer.apply(this, arguments);
+   td.innerHTML = td.innerHTML + '%'
+ }
+ var pan_validator = function(value,callback){
+		var txtpan = value; 
+		var regExp = /[a-zA-z]{5}\d{4}[a-zA-Z]{1}/; 
+		toastr.remove();
+		if (txtpan.length == 10 ){ 
+			if( txtpan.match(regExp) ){ 
+				toastr.success('Valid PAN Number');
+				callback(true);
+			}
+			else {
+				toastr.error('Not a valid PAN Number');
+				callback(false);
+			} 
+		} 
+		else { 
+			toastr.warning('Please enter 10 digits for a valid PAN number');
+			callback(false);
+		}
+
+ }
+</script>
+<script type="text/javascript">
+	var tdsData = function() {
+    return [];
+  };
+	getTDS = tdsData();
+  var hotSettings_tds_items = {
+		data: getTDS,
+		rowHeaders: true,
+		colHeaders:['NAME OF THE PERSON / COMPANY','PAN NO','NATURE OF DEDUCTION','DATE OF DEDUCTION','BASIC SALARY','RATE OF DEDECTOR','TDS DEDUCTED','TOTAL SALARY PAID'],
+		stretchH: 'all',
+		//columnHeaderHeight:40,
+		columns: [
+			{data: 'name',type: 'text'},
+			{data: 'pan',type: 'text',validator:pan_validator},
+			{data: 'nature_deduction',type: 'dropdown',source: ['Professional Fees']},
+			{data: 'date',type: 'date',dateFormat: 'YYYY/MM/DD',correctFormat: true,},
+			{data: 'basic_salary',type: 'numeric',numericFormat:{ pattern:'0,0'},className:'htRight'},
+			{data: 'rate_deductor',renderer:percentageRenderer,editor: 'select',selectOptions: [10,20,30],className:'htCenter'},
+			{data: 'tds_deductor',type: 'numeric',numericFormat:{ pattern:'0,0'},readOnly:true,className:'htRight'},
+			{data: 'total_salary',type: 'numeric',numericFormat:{ pattern:'0,0'},readOnly:true,className:'htRight'},
+		],
+		colWidths:[250,100,180,150,120,150,120,150],
+		stretchH: 'all',
+		width: "100%",
+		height: 350,
+		minRows:10,
+		minSpareRows: 1,
+		viewportRowRenderingOffset:70,
+		viewportColumnRenderingOffset:70,
+		contextMenu:true,
+		formulas:true,
+		afterChange: function(r,c) {
+			if(c != "loadData" && c != "populateFromArray"){
+				if(r){
+					if(r[0][1] ==  "basic_salary"){  //column
+						//console.log(r);
+						if(r[0][2] !=  r[0][3]){  //check previous value
+							var row = r[0][0];							//row
+							var val = r[0][3];							//row
+							var rate_deductor = this.getDataAtCell(row,5);
+							var tds_deduction = val*(rate_deductor/100);
+							this.setDataAtCell(row, 6, tds_deduction);
+							this.setDataAtCell(row, 7, (val-tds_deduction));
+						}
+					}
+					else if(r[0][1] ==  "rate_deductor"){  //column
+						//console.log(r);
+						if(r[0][2] !=  r[0][3]){  //check previous value
+							var row = r[0][0];							//row
+							var val = r[0][3];							//row
+							var basic_salary = this.getDataAtCell(row,4);
+							var tds_deduction = basic_salary*(val/100);
+							this.setDataAtCell(row, 6, tds_deduction);
+							this.setDataAtCell(row, 7, (basic_salary-tds_deduction));
+						}
+					}
+				}
+			}
+		}
+  };
+var hot_tds_items = new Handsontable($("#example")[0],hotSettings_tds_items);
+var visualObjectRow = function(sheet_tittle, row) {
+var obj = {};
+var readData;
+for (var i = 0; i < sheet_tittle.countCols(); i++) {
+	readData = sheet_tittle.getDataAtCell(row, i);
+	if(readData ==0){
+		cellDatas = "0";
+	}else if(readData == null || readData == ''){
+		cellDatas = '';
+	}else{
+		cellDatas = readData;
+	}
+	obj[sheet_tittle.colToProp(i)] = cellDatas.toString();
+}
+return obj
+}
+$("#tds_data_save").click(function(){
+	$("#tds_data_save").css("pointer-events", "none");
+	var htContents = hot_tds_items.getSourceData();
+	var cleanedGridData = [];
+	var obj = {};
+	$.each( htContents, function( rowKey, object) {
+		if (!hot_tds_items.isEmptyRow(rowKey)){
+		cleanedGridData.push(visualObjectRow(hot_tds_items, rowKey));
+		}
+	});
+	if(cleanedGridData.length >0){
+		var keys = [];
+		var tdsColumns = [{'name':'Name of the person / Company','pan':'PAN Number','nature_deduction':'Nature of Deduction','date':'Date of Deduction','basic_salary':'Basic Salary','rate_deductor':'Rate of Deductor'}];
+		$.each(cleanedGridData, function(index, element) {
+			for(var key in element){
+				if(element[key] == ""){
+				 keys.push(key);
+				}
+			}
+		});
+		if(keys.length >0){
+			toastr["warning"]("Please fill the required field", tdsColumns[0][keys[0]]+" is empty");
+			$("#tds_data_save").css("pointer-events", "all");
+		}
+		else{
+			var tds_items_data = JSON.stringify(cleanedGridData);
+			$.ajax({
+				url: "tds-post.php",
+				data:{tds_data:tds_items_data},
+				type:'post',
+				success: function(resp){
+					$("#tds_data_save").css("pointer-events", "all");
+					if(resp == 5)
+						toastr["warning"]("Please Login Again", "Session Expired");
+					else if(resp == 1){
+						toastr["success"]("Data Saved");
+					}
+					else
+						toastr["error"]("Please try again later", "Something went wrong");
+				}
+			});
+		}
+	}
+	else{
+		toastr["warning"]("Please fill the details", "Empty details");
+		$("#tds_data_save").css("pointer-events", "all");
+	}
+});
+
+$("#hot-display-license-info").remove();
+</script> 
+   
