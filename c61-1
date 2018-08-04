@@ -1,0 +1,755 @@
+		
+<?php  
+ //  error_reporting(E_ALL);
+  // ini_set("display_errors", 1);
+require_once "../dbconnect.php";
+session_start();
+ $eid=$_POST['eid'];
+  $task_id=$_POST['taskid'];
+ ?>
+		
+<script type="text/javascript" src="forms/asset_ui_milestone/script.js"></script>
+
+<script src="forms/asset_ui_milestone/PF_registration/xlsx.core.min.js"></script>
+<script>
+//files
+	var hot2;
+	var hot3;
+	var cleanedGridData3;
+	var cleanedGridData2;
+	var cleanedGridData4;
+	 function handleFile(e) {
+		 		var ext = $('#files').val().split('.').pop().toLowerCase();
+			
+		        if($.inArray(ext, ['xlsx','xls']) !== -1){
+		        	 //Get the files from Upload control
+				        var files = e.target.files;
+				        var i, f;
+		        	  //Loop through files
+					        for (i = 0, f = files[i]; i != files.length; ++i) {
+					            var reader = new FileReader();
+					            var name = f.name;
+					            reader.onload = function (e) {
+					                var data = e.target.result;
+
+					                var result;
+					                var workbook = XLSX.read(data, { type: 'binary' });
+					                
+					                var sheet_name_list = workbook.SheetNames;
+					                sheet_name_list.forEach(function (y) { /* iterate through sheets */
+					                    //Convert the cell value to Json
+					                    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
+					                    if (roa.length > 0) {
+					                        result = roa;
+					                    }
+					                });
+					               //Get the json
+					              /* var pf_ar=[];
+					                $.each( result, function( k, v ) {
+					                	var name1=v.Name
+					                	var name1=v.Name
+									  console.log( "Name: " + name1 ,"Designation:"+name2);
+									});
+										*/							
+					                
+									var  container2 = document.getElementById('pf_reg_tab2_hsn_example'), hot2;
+
+									window.hot2 = new Handsontable(container2, {
+									  stretchH: 'all',
+									  colWidths:200,
+									  rowHeaders: true,
+									  allowEmpty: false,
+									  colHeaders:['Name','Designation','City','State','Pin','Address','Aadhar no','PAN no','Mobile no','Mail id'],
+									  data: JSON.parse(JSON.stringify(result)),
+									  width: "100%",
+									  height: 280,
+									  autoWrapRow: true,
+									  minRows:3,
+									  maxCols: 7,
+									  minSpareRows: 1,
+									  viewportRowRenderingOffset:200,
+									  viewportColumnRenderingOffset:200,
+									  contextMenu:true
+									});
+
+									$("#hot-display-license-info").remove();
+
+
+
+
+
+
+					              /* $.each(result, function(k,v) {
+									 
+									    console.log(v);
+									  
+									});
+					                var myresult=result;
+					*/
+
+
+
+
+					            };
+					            reader.readAsArrayBuffer(f);
+					        }
+
+			        }
+			        else{
+
+			        	 alert('invalid extension!');
+			        }
+   
+    }
+//files1
+    function handleFile1(e) {
+		 		var ext = $('#files1').val().split('.').pop().toLowerCase();
+			
+		        if($.inArray(ext, ['xlsx','xls']) !== -1){
+		        	 //Get the files from Upload control
+				        var files = e.target.files;
+				        var i, f; 
+		        	  //Loop through files
+					        for (i = 0, f = files[i]; i != files.length; ++i) {
+					            var reader = new FileReader();
+					            var name = f.name;
+					            reader.onload = function (e) {
+					                var data = e.target.result;
+
+					                var result;
+					                var workbook = XLSX.read(data, { type: 'binary' });
+					                
+					                var sheet_name_list = workbook.SheetNames;
+					                sheet_name_list.forEach(function (y) { /* iterate through sheets */
+					                    //Convert the cell value to Json
+					                    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
+					                    if (roa.length > 0) {
+					                        result = roa;
+					                    }
+					                });
+					                console.log(result);
+					               //Get the json
+					              /* var pf_ar=[];
+					                $.each( result, function( k, v ) {
+					                	var name1=v.Name
+					                	var name1=v.Name
+									  console.log( "Name: " + name1 ,"Designation:"+name2);
+									});
+										*/							
+					                
+									var  container2 = document.getElementById('pf_reg_tab3_uan_hsn_example'), hot3;
+
+									window.hot3 = new Handsontable(container2, {
+									  stretchH: 'all',
+									  colWidths:200,
+									  rowHeaders: true,
+									  allowEmpty: false,
+									  colHeaders: ["UAN number", "DOJ", "Aadhar number"],
+									  data: JSON.parse(JSON.stringify(result)),
+									  width: "100%",
+									  height: 280,
+									  autoWrapRow: true,
+									  minRows:3,
+									  maxCols: 3,
+									  minSpareRows: 1,
+									  viewportRowRenderingOffset:200,
+									  viewportColumnRenderingOffset:200,
+									  contextMenu:true
+									});
+
+									$("#hot-display-license-info").remove();
+
+
+
+
+
+
+					              /* $.each(result, function(k,v) {
+									 
+									    console.log(v);
+									  
+									});
+					                var myresult=result;
+					*/
+
+
+
+
+					            };
+					            reader.readAsArrayBuffer(f);
+					        }
+
+			        }
+			        else{
+
+			        	 alert('invalid extension!');
+			        }
+   
+    }
+
+
+
+			var visualObjectRow = function(sheet_tittle, row) {
+									var obj = {};
+									var readData;
+									for (var i = 0; i < sheet_tittle.countCols(); i++) {
+										readData = sheet_tittle.getDataAtCell(row, i);
+										if(readData ==0){
+											cellDatas = "0";
+										}else if(readData == null || readData == ''){
+											cellDatas = '';
+											/*return obj['status'] = "pugal";*/
+											toastr.warning('Fill all fields !');
+											 throw new Error("Something went badly wrong!");
+
+										}else{
+											cellDatas = readData;
+										}
+										obj[sheet_tittle.colToProp(i)] = cellDatas.toString();
+									}
+									return obj
+									}
+ //files 2 
+		 function handleFile2(e) {
+				 		var ext = $('#files2').val().split('.').pop().toLowerCase();
+					
+				        if($.inArray(ext, ['xlsx','xls']) !== -1){
+				        	 //Get the files from Upload control
+						        var files = e.target.files;
+						        var i, f;
+				        	  //Loop through files
+							        for (i = 0, f = files[i]; i != files.length; ++i) {
+							            var reader = new FileReader();
+							            var name = f.name;
+							            reader.onload = function (e) {
+							                var data = e.target.result;
+
+							                var result;
+							                var workbook = XLSX.read(data, { type: 'binary' });
+							                
+							                var sheet_name_list = workbook.SheetNames;
+							                sheet_name_list.forEach(function (y) { /* iterate through sheets */
+							                    //Convert the cell value to Json
+							                    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
+							                    if (roa.length > 0) {
+							                        result = roa;
+							                    }
+							                });
+							               //Get the json
+							              /* var pf_ar=[];
+							                $.each( result, function( k, v ) {
+							                	var name1=v.Name
+							                	var name1=v.Name
+											  console.log( "Name: " + name1 ,"Designation:"+name2);
+											});
+												*/							
+							                
+											var  container2 = document.getElementById('pf_reg_tab3_hsn_example'), hot4;
+
+											window.hot4 = new Handsontable(container2, {
+											  stretchH: 'all',
+											  colWidths:200,
+											  rowHeaders: true,
+											  allowEmpty: false,
+											  colHeaders:['Name','Designation','Address','Aadhar no','PAN no','Mobile no','Mail id'],
+											  data: JSON.parse(JSON.stringify(result)),
+											  width: "100%",
+											  height: 280,
+											  autoWrapRow: true,
+											  minRows:3,
+											  maxCols: 7,
+											  minSpareRows: 1,
+											  viewportRowRenderingOffset:200,
+											  viewportColumnRenderingOffset:200,
+											  contextMenu:true
+											});
+
+											$("#hot-display-license-info").remove();
+
+
+
+
+
+
+							              /* $.each(result, function(k,v) {
+											 
+											    console.log(v);
+											  
+											});
+							                var myresult=result;
+							*/
+
+
+
+
+							            };
+							            reader.readAsArrayBuffer(f);
+							        }
+
+					        }
+					        else{
+
+					        	 alert('invalid extension!');
+					        }
+		   
+		    }
+
+  //Change event to dropdownlist
+		  $(document).ready(function(){
+		    $('#files').change(handleFile);
+		    $('#files1').change(handleFile1);
+		    $('#files2').change(handleFile2);
+		  });
+
+  //submit form
+		 $(".PF_Reg_tab2_form_submit").click(function(e){
+			e.preventDefault();
+			var htContents2 = '';
+			htContents2 = hot2.getSourceData();
+			var cleanedGridData2 = []; 
+			var obj = {};
+			$.each( htContents2, function( rowKey, object) {
+				if (!hot2.isEmptyRow(rowKey)){
+				cleanedGridData2.push(visualObjectRow(hot2, rowKey));
+				}
+			});
+			console.log(cleanedGridData2);
+		});
+
+			 	
+			 	
+			 
+			
+
+
+
+
+//files2
+
+//submit form
+		 $(".PF_Reg_tab3_form_submit").click(function(e){
+			e.preventDefault();
+			var htContents3 = '';
+			htContents3 = hot3.getSourceData();
+			var cleanedGridData3 = []; 
+			var obj = {};
+			$.each( htContents3, function( rowKey, object) {
+				if (!hot3.isEmptyRow(rowKey)){
+				cleanedGridData3.push(visualObjectRow(hot3, rowKey));
+				}
+			});
+			var htContents4 = '';
+			htContents4 = hot4.getSourceData();
+			var cleanedGridData4 = []; 
+			$.each( htContents4, function( rowKey, object) {
+				if (!hot4.isEmptyRow(rowKey)){
+				cleanedGridData4.push(visualObjectRow(hot4, rowKey));
+				}
+			});
+				/*console.log(cleanedGridData2);*/
+				console.log(JSON.stringify(cleanedGridData3));
+			 	console.log(JSON.stringify(cleanedGridData4));
+			 	
+			 
+			
+		});
+</script>
+
+
+
+		<!-- <script type="text/javascript" src="forms/asset_ui_milestone/PF_registration/pf_reg_tab2_hsn.js"></script>
+		<script type="text/javascript" src="forms/asset_ui_milestone/PF_registration/pf_reg_tab3_hsn.js"></script> 
+		<script type="text/javascript" src="forms/asset_ui_milestone/PF_registration/pf_reg_tab3_uan_hsn.js"></script> --> 
+<!--modal begin-->
+      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLabel">PF Registration </h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">×</span>
+	        </button>
+      </div>
+      <div class="modal-body">
+	       	<!--display form dynamically here-->
+	
+	       	<!--PF form reg-->
+	       		<div class="form-modal PF_reg_form">
+		        	<ul class="nav nav-tabs" role="tablist">
+						<li class="nav-item ">
+							<a class="nav-link active" data-toggle="tab" href="#m_tabs_1_1">
+								PF Registration 
+							</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link click_trigger" data-toggle="tab" href="#m_tabs_1_2" >
+								Authorized Person / Directors
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" data-toggle="tab" href="#m_tabs_1_3">
+								Employers details
+							</a>
+						</li>
+					</ul>
+		            <div class="tab-content">
+						<div class="tab-pane active" id="m_tabs_1_1" role="tabpanel">
+							<form class="PF_Reg_tab1_form" id="form1" data-dirid="1" method="POST" >
+								<div class="form-group m-form__group row">
+										<div class="col-lg-6">
+											<label>Business Name:</label>
+											<input class="form-control m-input" name="business_name" type="text" id="PF_reg_business_name"  required>
+										</div>
+										<div class="col-lg-6">
+											<label class="">Business Type:</label>
+											<select class="form-control m-input" name="business_type" id="PF_reg_business_type"   required>
+												<option value="" selected>Select business type</option>
+												<option value="BPLC">B PLC</option>
+												<option vlaue="LLP">LLP</option>
+												<option value="Proprietor">Proprietor</option>
+											</select>
+										</div>
+									</div>
+								<div class="form-group m-form__group row">
+										<div class="col-lg-6">
+											<label>Nature of Business:</label>
+											<input class="form-control m-input" type="text" name="nature_of_business"  id="PF_reg_nature_of_business" required>
+										</div>
+										<div class="col-lg-6">
+											<label class="">Company PAN no:</label>
+											<input class="form-control m-input" onblur="pan_number(this);" name="company_pan_no" type="text" id="PF_reg_company_pan_no" required>
+										</div>
+									</div>
+								<div class="form-group m-form__group row">
+										<div class="col-lg-6">
+											<label>Company certificate:</label>
+											<div class="m-radio-inline">
+												<label class="m-radio">
+												<input type="radio" name="company_certificate" value="Incorporation" required> Incorporation
+												<span></span>
+												</label>
+												<label class="m-radio">
+												<input type="radio" name="company_certificate" value="GST" required> GST
+												<span></span>
+												</label>
+												<label class="m-radio">
+												<input type="radio" name="company_certificate"  value="MSME" required> MSME
+												<span></span>
+												</label>
+											</div>
+										</div>
+										<div class="col-lg-6">
+											<label>Office:</label>
+											<div class="m-radio-inline">
+												<label class="m-radio">
+												<input type="radio" name="rent_own" value="Rent" required> Rent
+												<span></span>
+												</label>
+												<label class="m-radio">
+												<input type="radio" name="rent_own" value="Own" required> Own
+												<span></span>
+												</label>
+											</div>					
+										</div>
+									</div>
+								<div class="form-group m-form__group row">
+										<div class="col-lg-6">
+											<label>Incorporation date:</label>
+											<input class="form-control date-picker" data-date-format="dd/mm/yyyy" name="PF_incorporation_date" id="m_datepicker_1_modal"  required>
+										</div>
+										<div class="col-lg-6">
+											<label class="">Office Address:</label>
+											<textarea class="form-control" id="PF_reg_office_address" name="Office_address" required> </textarea>
+											<input type="hidden" id="id" name="id" value="1">
+										</div>
+									</div>
+								<hr/>
+								<div class=" text-right">
+									<button type="submit" class="btn btn-brand">Submit</button>
+									<button type="reset" class="btn btn-secondary">Cancel</button>
+								</div>
+				        	</form>
+						</div>
+						<div class="tab-pane" id="m_tabs_1_2" role="tabpanel">
+							<form class="PF_Reg_tab2_form " >
+								<div class="col-sm-6">
+									<div style="margin-bottom: 4% !important;">
+										<span>Import from Excel :</span>
+										<a class="btn btn-warning btn-sm m-btn  m-btn m-btn--icon m-btn--pill " style="float: right;" href="forms/asset_ui_milestone/PF_registration/sample_excel/a1.xlsx" download>
+											<span>
+												<i class="fa fa-download"></i>
+												<span>Sample data</span>
+											</span>
+										</a>
+									</div>
+									<input type="file" class=" form-control" id="files" name="files"/>
+								</div>
+								<div style="margin: 2% !important;margin-left:2% !important;" class="col-sm-6">
+									<span>Verify Documents :</span>
+								</div>
+							 	<div id="pf_reg_tab2_hsn_example" class="dataTable"></div>
+								<hr/>
+								<div class="text-right">
+									<button class="btn btn-brand PF_Reg_tab2_form_submit">Submit</button>
+									<button type="reset" class="btn btn-secondary">Cancel</button>
+								</div>
+				        	</form>
+						</div>
+						<div class="tab-pane" id="m_tabs_1_3" role="tabpanel">
+							
+								<!--UNA no.confirmation-->
+								<div class="form-group m-form__group row">
+										<div class="col-lg-12">
+											<!-- <div style="margin-bottom: 2%;">
+												<label>No.of Employee:</label>
+												<input type="text" id="pf_reg_tab3_uan_no" class="form-control" style="width:5%;display: inline;">
+												<input type="hidden" id="uan_hidden" name="">
+											</div> -->
+											<p style="float: left;">Having UAN number?</p>
+											<span class="m-switch m-switch--icon" style="margin-left: 30px;margin-top:-10px;">
+												<label>
+						                        <input type="checkbox" class="UNA_checkbox" name="is_una_no">
+						                        <span></span>
+						                        </label>
+								            </span>
+								           	<!--  <span style="margin-top: -10px; position: absolute;"><input class="form-control PF_reg_UNA_input" type="text" placeholder="Enter UAN no" style="display: inline;display:none;"></span> -->
+										</div>
+									</div>
+								<div class="pf_reg_tab3_uan_table PF_reg_UNA_input " style="display:none;">
+									<div class="col-sm-6">
+										<div style="margin-bottom: 4% !important;">
+											<span>Import from Excel :</span>
+											<a class="btn btn-warning btn-sm m-btn  m-btn m-btn--icon m-btn--pill " style="float: right;" href="forms/asset_ui_milestone/PF_registration/sample_excel/a2.xlsx" download>
+												<span>
+													<i class="fa fa-download"></i>
+													<span>Sample data</span>
+												</span>
+											</a>
+										</div>
+										<input type="file" class="form-control" id="files1" name="files1"/>
+									</div>
+									<div style="margin: 2% !important;margin-left:2% !important;" class="col-sm-6">
+										<span>Verify Documents :</span>
+									</div>
+									<div id="pf_reg_tab3_uan_hsn_example" class="dataTable"></div><hr/>
+				            	</div>
+				            	
+				            	<h6 style="margin-top: 2%;">New Employee :</h6>
+								<div class="PF_reg_director_table" style="padding-bottom: 3%;">
+									<div class="col-sm-6">
+										<div style="margin-bottom: 4% !important;">
+											<span>Import from Excel :</span>
+												<a class="btn btn-warning btn-sm m-btn  m-btn m-btn--icon m-btn--pill " style="float: right;" href="forms/asset_ui_milestone/PF_registration/sample_excel/a3.xlsx" download>
+												<span>
+													<i class="fa fa-download"></i>
+													<span>Sample data</span>
+												</span>
+											</a>
+										</div>
+											<input type="file" class="form-control" id="files2" name="files2"/>
+										
+									</div>
+									<div style="margin: 2% !important;margin-left:2% !important;" class="col-sm-6">
+										<span>Verify Documents :</span>
+									</div>
+									<div id="pf_reg_tab3_hsn_example" class="dataTable"></div>
+				            	</div>
+							    <div class=" text-right">
+									<button  class="btn btn-brand PF_reg_director_table PF_Reg_tab3_form_submit">Submit</button>
+									<button type="reset" class="btn btn-secondary PF_reg_director_table">Cancel</button>
+								</div>
+							
+
+						</div>
+					</div>
+		        
+        		</div>
+
+
+      </div>
+ 
+<!--modal end-->
+
+
+
+
+<script type="text/javascript" src="forms/asset_ui_milestone/jquery.serializejson.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <script type="text/javascript">
+				/*$(document).ready(function(){
+					var eid=<?php echo $_POST['eid']?>;
+				});*/
+					$(document).on('submit','#form1',function(e){	
+						e.preventDefault();	
+						
+							var form={"eid":"16674","docs":"replace","taskid":"13822"};
+							var formdata=$('#form1').serializeJSON();								
+							$.extend( form, {"formdata":formdata} );
+							var data1=JSON.stringify(form).replace(/'/g,"''");
+				            $.ajax({
+				                  url: 'https://oov9bkqx1a.execute-api.ap-south-1.amazonaws.com/Common-API/milestones',
+				                 type: "POST",
+				                 data: data1,
+				                success: function(msg) {  
+				       	   toastr.success('Submited successfully',"");
+				    //window.location.href ="dashboard.php";
+				       			
+				       			}
+				   				
+				          }); return false;
+				      
+				   }); 
+</script> -->
+
+
+
+
+<script type="text/javascript">
+
+	$(document).on('submit','form',function(e){	
+		e.preventDefault();	  
+		var tds_items_data=tds_items_data1=tds_items_data2="null";
+		$('.PF_Reg_tab2_form_submit').click();
+		$('.PF_Reg_tab3_form_submit').click();
+		if ((tds_items_data && (tds_items_data1 || tds_items_data2))=="null"){
+			console.log('no data');
+
+		}else{
+			console.log(tds_items_data);
+			console.log(tds_items_data1);
+			console.log(tds_items_data2);
+		}
+		
+		
+		var d_id=$(this).data('dirid');
+		 if(!$('#form'+d_id).valid()) return false;
+								var form={"eid":"<?php echo $eid; ?>","docs":"replace","taskid":"<?php echo $task_id; ?>"};
+								var formdata=$('#form'+d_id).serializeJSON();								
+								$.extend( form, {"formdata":formdata} );
+								var data1=JSON.stringify(form).replace(/'/g,"''");
+            $.ajax({
+                  url: 'https://oov9bkqx1a.execute-api.ap-south-1.amazonaws.com/Common-API/milestones',
+                 type: "POST",
+                 data: data1,
+				 async:false,
+                success: function(msg) {  
+       	   toastr.success('Submited successfully',"");
+    //window.location.href ="dashboard.php";
+       			$('.has-success label').css('color','initial !important');
+       			}
+   
+          }); return false; 
+   }); 
+
+
+
+
+$(document).ready(function(){
+
+	var form={"eid":"<?php echo $eid; ?>","docs":"select","taskid":"<?php echo $task_id; ?>"};
+	var data1=JSON.stringify(form).replace(/'/g,"''");	
+	$.ajax({
+                 url: 'https://oov9bkqx1a.execute-api.ap-south-1.amazonaws.com/Common-API/milestones',
+                 type: "POST",
+                 data: data1,
+				 async:false,
+                success: function(msg) {  
+       	  				var ss=msg;
+						var  ss1=ss[0].formdata;
+						var ss_length=ss1.length-1;		
+       					var mydata=ss1[ss_length];
+       					$('#PF_reg_business_name').val(mydata['business_name']);
+       					$('#PF_reg_business_type').val(mydata['business_type']);
+       					$('#PF_reg_nature_of_business').val(mydata['nature_of_business']);
+       					$('#PF_reg_company_pan_no').val(mydata['company_pan_no']);
+       					var val1=mydata['company_certificate'];
+       					$("input[name=company_certificate][value=" + val1 + "]").prop('checked', true);
+       					var val2=mydata['rent_own'];
+       					$("input[name=rent_own][value=" + val2 + "]").prop('checked', true);
+       					$('#m_datepicker_1_modal').val(mydata['PF_incorporation_date']);
+       					$('#PF_reg_office_address').val(mydata['Office_address']);
+       			}
+   
+          });
+});
+
+/*tab3*/
+		$('.PF_reg_UNA_input').on('change',function(){
+			var no_of_emp=$('#pf_reg_tab3_uan_no').val();
+			var uan_no=$(this).val();
+			$('#uan_hidden').val(uan_no);
+			/*hot_tds_items31.alter('insert_row', uan_no);*/
+		});
+
+
+
+//functions excel
+	
+		var container = document.getElementById('pf_reg_tab2_hsn_example');
+		var hot2 = new Handsontable(container,{
+		  stretchH: 'all',
+		  colWidths:200,
+		  rowHeaders: true,
+		  allowEmpty: false,
+		  colHeaders:['Name','Designation','City','State','Pin','Address','Aadhar no','PAN no','Mobile no','Mail id'],
+		  width: "100%",
+		  height: 280,
+		  autoWrapRow: true,
+		  minRows:3,
+		  maxCols: 10,
+		  minSpareRows: 1,
+		  viewportRowRenderingOffset:200,
+		  viewportColumnRenderingOffset:200,
+		  contextMenu:true
+		});
+		$("#hot-display-license-info").remove();
+
+		var container1 = document.getElementById('pf_reg_tab3_uan_hsn_example');
+		var hot3 = new Handsontable(container1,{
+		  stretchH: 'all',
+		  colWidths:200,
+		  rowHeaders: true,
+		  allowEmpty: false,
+		  colHeaders: ["UAN number", "DOJ", "Aadhar number"],
+		  width: "100%",
+		  height: 200,
+		  autoWrapRow: true,
+		  minRows:3,
+		  maxCols: 3,
+		  minSpareRows: 1,
+		  viewportRowRenderingOffset:200,
+		  viewportColumnRenderingOffset:200,
+		  contextMenu:true
+		});
+		$("#hot-display-license-info").remove();
+
+		var container2 = document.getElementById('pf_reg_tab3_hsn_example');
+		var hot4 = new Handsontable(container2,{
+		  stretchH: 'all',
+		  colWidths:200,
+		  rowHeaders: true,
+		  allowEmpty: false,
+		  colHeaders: ['Name','Designation','City','State','Pin','Address','Aadhar no','PAN no','Mobile no','Mail id'],
+		  width: "100%",
+		  height: 250,
+		  autoWrapRow: true,
+		  minRows:3,
+		  maxCols: 10,
+		  minSpareRows: 1,
+		  viewportRowRenderingOffset:200,
+		  viewportColumnRenderingOffset:200,
+		  contextMenu:true
+		});
+		$("#hot-display-license-info").remove();
+
+		
+
+</script>
