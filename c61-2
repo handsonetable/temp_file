@@ -1,0 +1,126 @@
+
+<script src="forms/asset_ui_milestone/PF_registration/xlsx.core.min.js"></script>
+<!-- <script type="text/javascript" src="forms/asset_ui_milestone/PF_registration/excel_view.js"></script>  -->
+<script>
+	
+	 function handleFile(e) {
+	 	var ext = $('#files').val().split('.').pop().toLowerCase();
+		
+    
+
+        if($.inArray(ext, ['xlsx','xls']) !== -1){
+        	 //Get the files from Upload control
+        var files = e.target.files;
+        var i, f;
+        	  //Loop through files
+        for (i = 0, f = files[i]; i != files.length; ++i) {
+            var reader = new FileReader();
+            var name = f.name;
+            reader.onload = function (e) {
+                var data = e.target.result;
+
+                var result;
+                var workbook = XLSX.read(data, { type: 'binary' });
+                
+                var sheet_name_list = workbook.SheetNames;
+                sheet_name_list.forEach(function (y) { /* iterate through sheets */
+                    //Convert the cell value to Json
+                    var roa = XLSX.utils.sheet_to_json(workbook.Sheets[y]);
+                    if (roa.length > 0) {
+                        result = roa;
+                    }
+                });
+               //Get the json
+                console.log( result[0]);
+			
+                
+				var  container2 = document.getElementById('excel_view'), hot2;
+
+				hot2 = new Handsontable(container2, {
+				  stretchH: 'all',
+				  colWidths:200,
+				  colHeaders:Object.keys(result[0]),
+				  data: JSON.parse(JSON.stringify(result)),
+				  width: "100%",
+				  height: 280,
+				  autoWrapRow: true,
+				  minRows:3,
+				  minSpareRows: 1,
+				  viewportRowRenderingOffset:200,
+				  viewportColumnRenderingOffset:200,
+				  contextMenu:true
+				});
+
+				$("#hot-display-license-info").remove();
+
+
+
+
+
+
+              /* $.each(result, function(k,v) {
+				 
+				    console.log(v);
+				  
+				});
+                var myresult=result;
+*/
+
+
+
+
+            };
+            reader.readAsArrayBuffer(f);
+        }
+
+        }else{
+
+        	 alert('invalid extension!');
+        }
+   
+    }
+
+  //Change event to dropdownlist
+  $(document).ready(function(){
+    $('#files').change(handleFile);
+  });
+</script>
+ 	
+	<style type="text/css">
+		.modal::-webkit-scrollbar{
+			width:0px;
+		}
+
+		.m-badge--metal{
+			margin: 2px;
+			padding: 0px 6px;
+		}
+	</style>
+
+<!--modal begin-->
+	
+      <div class="modal-header">
+      	Documents Required
+      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      	<div class="modal-body">
+	
+
+		<input type="file" class="form-control" id="files" name="files"/>
+		<div id="excel_view" class="dataTable"></div>
+       </div>
+ 		<div class="modal-footer">
+ 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+ 		</div>
+
+<!-- var ext = $('#my_file_field').val().split('.').pop().toLowerCase();
+if($.inArray(ext, ['gif','png','jpg','jpeg']) == -1) {
+    alert('invalid extension!');
+} 
+
+
+<button type="button" class="btn btn-success" data-trigger="click" data-skin="dark" data-toggle="m-popover" data-placement="bottom" title="" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." data-original-title="Dark skin">
+                          Dark skin
+                        </button>-->
